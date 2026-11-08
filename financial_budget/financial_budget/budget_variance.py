@@ -19,6 +19,7 @@ class Layer:
 		self.status = {}  # idx -> text
 		self.extra = {}  # idx -> {"fb_last_year": .., "fb_ytd_budget": .., "fb_ytd_actual": ..}
 		self.inserted = []  # (insert_before_idx | None for end, row)
+		self.cost_rows = set()  # idx of expense rows: variance = budget - actual, so favourable is positive
 		self.notes = []
 
 	def set(self, idx, values, status=None):
@@ -31,10 +32,11 @@ def precision():
 	return cint(frappe.db.get_default("currency_precision")) or 2
 
 
-def variance(actual, budget):
+def variance(actual, budget, cost=False):
+	"""Favourable variance is positive: actual - budget, or budget - actual for an expense (cost=True)."""
 	if actual is None or budget is None:
 		return None, None
-	diff = flt(actual) - flt(budget)
+	diff = flt(budget) - flt(actual) if cost else flt(actual) - flt(budget)
 	pct = diff / abs(flt(budget)) * 100 if flt(budget) else None
 	return diff, pct
 
@@ -108,13 +110,13 @@ def write(data, layer):
 	for idx, row in enumerate(data):
 		if not row:
 			continue
-		_write_row(row, layer.budget.get(idx), layer, p)
+		_write_row(row, layer.budget.get(idx), layer, p, idx in layer.cost_rows)
 		if idx in layer.status:
 			row["fb_status"] = layer.status[idx]
 		row.update(layer.extra.get(idx, {}))
 
 	for _before, row in layer.inserted:
-		_write_row(row, row.pop("_fb_budget", None), layer, p)
+		_write_row(row, row.pop("_fb_budget", None), layer, p, row.pop("_fb_cost", False))
 
 	# insert from the back so earlier indexes stay valid; same index keeps insertion order
 	ordered = sorted(
@@ -128,19 +130,19 @@ def write(data, layer):
 	return data
 
 
-def _write_row(row, values, layer, p):
+def _write_row(row, values, layer, p, cost=False):
 	values = values or {}  # missing budget is written as None, never 0
 	for key in layer.keys:
 		budget = values.get(key)
-		_put(row, key, budget, row.get(key), p)
+		_put(row, key, budget, row.get(key), p, cost)
 	# "__total__" lets a row define its own total (e.g. an opening balance is not summed)
 	total = values["__total__"] if "__total__" in values else total_of(layer, values)
-	_put(row, "total", total, actual_total(layer, row), p)
+	_put(row, "total", total, actual_total(layer, row), p, cost)
 
 
-def _put(row, suffix, budget, actual, p):
+def _put(row, suffix, budget, actual, p, cost=False):
 	row[f"fb_budget_{suffix}"] = None if budget is None else flt(budget, p)
-	diff, pct = variance(actual, None if budget is None else flt(budget, p))
+	diff, pct = variance(actual, None if budget is None else flt(budget, p), cost)
 	row[f"fb_variance_{suffix}"] = None if diff is None else flt(diff, p)
 	row[f"fb_variance_pct_{suffix}"] = None if pct is None else flt(pct, 2)
 

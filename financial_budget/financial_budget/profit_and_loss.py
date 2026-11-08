@@ -144,6 +144,8 @@ def apply_account_tree(
 		label = "'" + _("Total {0} ({1})").format(_(root_type), _(balance)) + "'"
 		for idx, row in enumerate(data):
 			if row and row.get("account") == label:
+				if root_type == "Expense":
+					layer.cost_rows.add(idx)
 				gaps = any(m.root_type == root_type for m in missing)
 				layer.set(idx, totals[root_type], (partial_status if budgeted else missing_status) if gaps else None)
 
@@ -151,6 +153,8 @@ def apply_account_tree(
 		acc = accounts.get(row.get("account")) if row else None
 		if acc:
 			layer.set(idx, tree.get(acc.name), status(acc))
+			if acc.root_type == "Expense":
+				layer.cost_rows.add(idx)
 
 	if opts.zero_budget_accounts:
 		insert_budget_only_rows(data, layer, accounts, tree, budgeted_leaves, roots, period_list, company)
@@ -205,6 +209,7 @@ def _budget_only_row(acc, period_list, budget, sample):
 		has_value=False,
 		total=0.0,
 		fb_budget_only=1,
+		_fb_cost=acc.root_type == "Expense",
 		fb_status=_("Budget Only (no actual)"),
 		_fb_budget=budget,
 	)

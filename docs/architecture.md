@@ -81,7 +81,10 @@ fieldname. A later override of the same method is listed as a conflict on the se
 - Group rows = sum of budgeted leaves below them. A leaf with no budget shows *empty*, not 0, status
   `No Budget`; a group with some unbudgeted leaves is `Partial Budget`.
 - Net profit budget = income budget − expense budget; `Plan Incomplete` when one side has no budget.
-- Variance = actual − budget; Variance % = variance / |budget| × 100 (empty when budget is 0 or missing).
+- Variance is signed so that **positive = favourable**: income rows and net profit use actual − budget,
+  expense rows (accounts and the Total Expense row) use budget − actual, so overspending is negative.
+  Variance % = variance / |budget| × 100 (empty when budget is 0 or missing). Balance Sheet and Cash
+  Flow keep actual − budget.
 - Last Year = the same report re-run for the range shifted by 12 months (actuals only).
 - YTD Budget / YTD Actual = fiscal-year start → last period end, from the same budget segments and a
   single-range re-run of the original report.

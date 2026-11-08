@@ -40,7 +40,14 @@ class TestProfitAndLossBudget(fx.BudgetTestCase, FrappeTestCase):
 
 		rent = rows[acc("FB Rent")]
 		self.assertAlmostEqual(rent["fb_budget_jul_2026"], 200)  # 2400 / 12, expense shown debit-positive
-		self.assertAlmostEqual(rent["fb_variance_jul_2026"], 50)
+		# favourable = positive: income actual - budget, expense budget - actual (overspend is negative)
+		self.assertAlmostEqual(rent["fb_variance_jul_2026"], -50)
+		self.assertAlmostEqual(rent["fb_variance_pct_jul_2026"], -25)
+		self.assertAlmostEqual(rows[acc("FB Operating Expenses")]["fb_variance_jul_2026"], 200 - 350)
+		total_expense = rows["'" + frappe._("Total {0} ({1})").format(frappe._("Expense"), frappe._("Debit")) + "'"]
+		self.assertAlmostEqual(total_expense["fb_variance_jul_2026"], 200 - 350)
+		net_row = rows["'" + frappe._("Profit for the year") + "'"]
+		self.assertAlmostEqual(net_row["fb_variance_jul_2026"], (2000 - 350) - (2500 - 200))
 
 		# group rows roll up budgeted leaves including hidden FB Services (1200 / 12)
 		self.assertAlmostEqual(rows[acc("FB Operating Income")]["fb_budget_jul_2026"], 2400 + 100)
