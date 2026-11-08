@@ -1,0 +1,198 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-11-08 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "company",
+  "fiscal_year",
+  "scenario",
+  "column_break_h",
+  "planning_frequency",
+  "profit_loss_source",
+  "currency",
+  "amended_from",
+  "accounts_section",
+  "accounts",
+  "periods_section",
+  "periods",
+  "is_balanced",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "BBS-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "options": "BBS-.YYYY.-",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Fiscal Year",
+   "options": "Fiscal Year",
+   "reqd": 1
+  },
+  {
+   "default": "Base",
+   "fieldname": "scenario",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Scenario",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_h",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Annual",
+   "description": "Annual: one balance per account at the fiscal year end. Monthly: one balance per account per month end.",
+   "fieldname": "planning_frequency",
+   "fieldtype": "Select",
+   "label": "Planning Period",
+   "options": "Annual\nMonthly",
+   "reqd": 1
+  },
+  {
+   "default": "ERPNext Budget",
+   "description": "ERPNext Budget: submitted Cost Center budgets of the company (income - expense), year to date.",
+   "fieldname": "profit_loss_source",
+   "fieldtype": "Select",
+   "label": "Planned Profit/Loss Source",
+   "options": "ERPNext Budget\nManual",
+   "reqd": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Budgeted Balance Sheet",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "description": "Balances in natural sign: assets as debit, liabilities and equity as credit. Contra accounts (e.g. accumulated depreciation) are negative. Equity excludes the current year's planned profit, which is added from the period table (no double counting).",
+   "fieldname": "accounts_section",
+   "fieldtype": "Section Break",
+   "label": "Planned Balances"
+  },
+  {
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "options": "Budgeted Balance Sheet Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "periods_section",
+   "fieldtype": "Section Break",
+   "label": "Balance Check"
+  },
+  {
+   "fieldname": "periods",
+   "fieldtype": "Table",
+   "label": "Periods",
+   "options": "Budgeted Balance Sheet Period"
+  },
+  {
+   "fieldname": "is_balanced",
+   "fieldtype": "Check",
+   "label": "Is Balanced",
+   "read_only": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-11-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Financial Budget",
+ "name": "Budgeted Balance Sheet",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts User",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Auditor",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "scenario",
+ "track_changes": 1
+}

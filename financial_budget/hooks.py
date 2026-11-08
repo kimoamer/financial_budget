@@ -253,3 +253,19 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+required_apps = ["frappe", "erpnext"]
+
+# Python wrappers around the three standard ERPNext financial reports.
+# The wrapper itself re-checks per call that this app is installed on the
+# current site and enabled (modules are shared by all sites of a worker).
+before_request = ["financial_budget.patches.financial_reports.apply"]
+before_job = ["financial_budget.patches.financial_reports.apply"]
+
+# Appends the budget filters to the three standard report scripts only.
+override_whitelisted_methods = {
+	"frappe.desk.query_report.get_script": "financial_budget.overrides.query_report.get_script"
+}
+
+after_install = "financial_budget.install.after_install"
+before_uninstall = "financial_budget.patches.financial_reports.before_uninstall"

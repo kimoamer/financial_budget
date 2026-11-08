@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-08 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "period_end_date",
+  "planned_profit_loss",
+  "total_assets",
+  "total_liabilities",
+  "total_equity",
+  "difference",
+  "currency"
+ ],
+ "fields": [
+  {
+   "fieldname": "period_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Period End Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Current fiscal year profit up to this date. Read-only when the source is ERPNext Budget.",
+   "fieldname": "planned_profit_loss",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Planned Profit/Loss (YTD)",
+   "options": "currency"
+  },
+  {
+   "fieldname": "total_assets",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Assets",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_liabilities",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Liabilities",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_equity",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Equity",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "description": "Assets - (Liabilities + Equity + Planned Profit/Loss). Must be zero to submit.",
+   "fieldname": "difference",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Difference",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Financial Budget",
+ "name": "Budgeted Balance Sheet Period",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

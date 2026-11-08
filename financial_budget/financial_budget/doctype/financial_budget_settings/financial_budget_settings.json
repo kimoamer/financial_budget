@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-08 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "reports_section",
+  "enable_profit_and_loss",
+  "enable_balance_sheet",
+  "enable_cash_flow",
+  "column_break_r",
+  "default_comparison_mode",
+  "show_variance_pct_by_default",
+  "display_zero_budget_accounts",
+  "enable_budget_charts",
+  "status_section",
+  "integration_status"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "description": "Master switch. When off, the three reports return exactly what ERPNext returns.",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enable Financial Budget Integration"
+  },
+  {
+   "fieldname": "reports_section",
+   "fieldtype": "Section Break",
+   "label": "Reports"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_profit_and_loss",
+   "fieldtype": "Check",
+   "label": "Enable P&L Budget"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_balance_sheet",
+   "fieldtype": "Check",
+   "label": "Enable Balance Sheet Budget"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_cash_flow",
+   "fieldtype": "Check",
+   "label": "Enable Cash Flow Budget"
+  },
+  {
+   "fieldname": "column_break_r",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Per Period",
+   "fieldname": "default_comparison_mode",
+   "fieldtype": "Select",
+   "label": "Default Budget Comparison Mode",
+   "options": "Per Period\nTotal Only"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_variance_pct_by_default",
+   "fieldtype": "Check",
+   "label": "Show Variance Percentage by Default"
+  },
+  {
+   "description": "Also list budgeted accounts that ERPNext hides because their actual amount is zero.",
+   "fieldname": "display_zero_budget_accounts",
+   "fieldtype": "Check",
+   "label": "Display Zero-Budget Accounts"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_budget_charts",
+   "fieldtype": "Check",
+   "label": "Enable Budget Charts"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Integration Status"
+  },
+  {
+   "fieldname": "integration_status",
+   "fieldtype": "HTML",
+   "label": "Integration Status"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-11-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Financial Budget",
+ "name": "Financial Budget Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

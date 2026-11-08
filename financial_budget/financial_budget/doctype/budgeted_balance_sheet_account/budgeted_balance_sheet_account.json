@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-08 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "period_end_date",
+  "account",
+  "root_type",
+  "account_type",
+  "opening_planned_balance",
+  "planned_movement",
+  "planned_closing_balance",
+  "currency",
+  "notes"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "period_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Period End Date",
+   "reqd": 1
+  },
+  {
+   "columns": 3,
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "account.root_type",
+   "fieldname": "root_type",
+   "fieldtype": "Data",
+   "label": "Root Type",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "account.account_type",
+   "fieldname": "account_type",
+   "fieldtype": "Data",
+   "label": "Account Type",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "opening_planned_balance",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Opening Planned Balance",
+   "options": "currency"
+  },
+  {
+   "columns": 1,
+   "fieldname": "planned_movement",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Planned Movement",
+   "options": "currency"
+  },
+  {
+   "columns": 2,
+   "description": "Opening Planned Balance + Planned Movement",
+   "fieldname": "planned_closing_balance",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Planned Closing Balance",
+   "options": "currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Link",
+   "label": "Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2026-11-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Financial Budget",
+ "name": "Budgeted Balance Sheet Account",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
