@@ -50,6 +50,19 @@ class TestProfitAndLossBudget(fx.BudgetTestCase, FrappeTestCase):
 		self.assertAlmostEqual(net["fb_budget_jul_2026"], 2500 - 200)
 		self.assertAlmostEqual(net["fb_budget_total"], 13200 - 2400)
 
+	def test_budget_column_comes_before_actual(self):
+		result, _o = fx.run(pl, fx.filters(periodicity="Quarterly"))
+		cols = [(c["fieldname"], c["label"]) for c in result[0]]
+		names = [f for f, _l in cols]
+		i = names.index("fb_budget_sep_2026")
+		self.assertEqual(names[i : i + 4], ["fb_budget_sep_2026", "sep_2026", "fb_variance_sep_2026", "fb_variance_pct_sep_2026"])
+		j = names.index("fb_budget_total")
+		self.assertEqual(names[j : j + 2], ["fb_budget_total", "total"])
+		labels = dict(cols)
+		self.assertTrue(labels["sep_2026"].endswith(frappe._("Actual")))
+		self.assertEqual(labels["total"], frappe._("Total") + " " + frappe._("Actual"))
+		self.assertNotIn(frappe._("Actual"), labels["account"])
+
 	def test_missing_budget_is_not_zero(self):
 		result, _o = fx.run(pl, fx.filters())
 		rows = fx.rows_by_account(result)

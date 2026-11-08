@@ -24,6 +24,9 @@ query_report.run / export_query / Prepared Report job / snapshot
                  └─ any exception → Error Log + original result + "could not be calculated" message
 ```
 
+Column order per compared amount: **Budget**, the actual column (its label gets the suffix
+*Actual*, e.g. `2026-2027 Actual`, `Total Actual`; fieldname unchanged), **Variance**, **Variance %**.
+
 The wrapper never changes an existing row value or column; it only appends `fb_*` keys to rows,
 `fb_*` columns, report-summary cards, one chart dataset and (Cash Flow) extra rows.
 

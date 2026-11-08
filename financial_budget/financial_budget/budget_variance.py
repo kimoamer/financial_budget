@@ -55,11 +55,13 @@ def actual_total(layer, row):
 
 
 def build_columns(columns, layer, opts):
+	"""Per compared amount: Budget, then the actual column (labelled "... Actual"), then the variances."""
 	per_period = opts.comparison == "Per Period"
+	with_total = not per_period or len(layer.keys) > 1
 	new_columns, total_block_added = [], False
 
-	def block(suffix, label):
-		cols = [_currency(f"fb_budget_{suffix}", label + " " + _("Budget"))]
+	def variances(suffix, label):
+		cols = []
 		if opts.show_variance:
 			cols.append(_currency(f"fb_variance_{suffix}", label + " " + _("Variance")))
 		if opts.show_variance_pct:
@@ -68,19 +70,29 @@ def build_columns(columns, layer, opts):
 			)
 		return cols
 
+	def budget(suffix, label):
+		return _currency(f"fb_budget_{suffix}", label + " " + _("Budget"))
+
+	def actual(col):
+		return {**col, "label": (col.get("label") or "") + " " + _("Actual")}  # a copy: ERPNext's column dict stays as is
+
 	labels = {p.key: p.label for p in layer.period_list}
 	total_label = _("Total")
 	for col in columns:
-		new_columns.append(col)
 		fieldname = col.get("fieldname") if isinstance(col, dict) else None
-		if per_period and fieldname in labels:
-			new_columns.extend(block(fieldname, labels[fieldname]))
-		if fieldname == "total" and not total_block_added and (not per_period or len(layer.keys) > 1):
-			new_columns.extend(block("total", total_label))
+		if fieldname in labels:
+			if per_period:
+				new_columns += [budget(fieldname, labels[fieldname]), actual(col), *variances(fieldname, labels[fieldname])]
+			else:
+				new_columns.append(actual(col))
+		elif fieldname == "total" and with_total and not total_block_added:
+			new_columns += [budget("total", total_label), actual(col), *variances("total", total_label)]
 			total_block_added = True
+		else:
+			new_columns.append(col)
 
-	if not total_block_added and (not per_period or len(layer.keys) > 1):
-		new_columns.extend(block("total", total_label))
+	if with_total and not total_block_added:  # no ERPNext total column (balances, single period): compare at the end
+		new_columns += [budget("total", total_label), *variances("total", total_label)]
 	if opts.show_last_year:
 		new_columns.append(_currency("fb_last_year", _("Last Year")))
 	if opts.show_ytd:
