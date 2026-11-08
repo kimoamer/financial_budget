@@ -42,6 +42,11 @@ def build(filters, result, original, opts):
 	segments, notes = get_budget_segments(company, source, range_start, range_end, budget_scope(filters, source))
 	layer.notes.extend(notes)
 	segments = {a: s for a, s in segments.items() if a in accounts}
+	actuals = {r["account"]: bv.actual_total(layer, r) for r in data if r and r.get("account") in accounts}
+	segments = {
+		a: [(s, e, -amount) for s, e, amount in segs] if is_contra(accounts[a], actuals.get(a)) else segs
+		for a, segs in segments.items()
+	}
 
 	def leaf_amounts(start_of, keys_periods):
 		return {
@@ -99,6 +104,16 @@ def build(filters, result, original, opts):
 		out[4] = _summary(out[4], layer, income, expense, accounts, segments, filters, rate, start_of, period_list)
 	out = tuple(out) if isinstance(result, tuple) else out
 	return ri.with_message(out, "<br>".join(layer.notes))
+
+
+def is_contra(account, actual):
+	"""A deduction inside its section (scholarships or discounts under Income, recoveries under Expense).
+	ERPNext budgets are entered as positive amounts, so its budget is shown negative like its actual.
+	Balance Must Be decides when set; otherwise a negative actual in the report range does."""
+	natural = "Credit" if account.root_type == "Income" else "Debit"
+	if account.balance_must_be:
+		return account.balance_must_be != natural
+	return flt(actual) < 0
 
 
 def budget_scope(filters, source):

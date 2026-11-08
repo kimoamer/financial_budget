@@ -115,11 +115,31 @@ def planned_profit_from_budget(company, fy, dates):
 				company, fy.name
 			)
 		)
-	root_type = dict(
-		frappe.get_all("Account", filters={"name": ("in", list(segments))}, fields=["name", "root_type"], as_list=True)
+	from financial_budget.financial_budget.profit_and_loss import is_contra
+
+	accounts = {
+		a.name: a
+		for a in frappe.get_all(
+			"Account", filters={"name": ("in", list(segments)), "root_type": ("in", ["Income", "Expense"])},
+			fields=["name", "root_type", "balance_must_be"],
+		)
+	}
+	debit_less_credit = dict(
+		frappe.get_all(
+			"GL Entry",
+			filters={"company": company, "account": ("in", list(accounts) or [""]), "is_cancelled": 0,
+				"posting_date": ("between", [fy.year_start_date, fy.year_end_date])},
+			fields=["account", "sum(debit) - sum(credit)"],
+			group_by="account",
+			as_list=True,
+		)
 	)
-	sign = {"Income": 1, "Expense": -1}
+	sign = {}
+	for name, acc in accounts.items():
+		natural = 1 if acc.root_type == "Income" else -1  # income adds to profit, expense reduces it
+		actual = -natural * flt(debit_less_credit.get(name))  # report terms: income credit-positive, expense debit-positive
+		sign[name] = -natural if is_contra(acc, actual) else natural
 	return {
-		d: sum(sign.get(root_type.get(a), 0) * allocate(s, fy.year_start_date, d) for a, s in segments.items())
+		d: sum(sign.get(a, 0) * allocate(s, fy.year_start_date, d) for a, s in segments.items())
 		for d in dates
 	}

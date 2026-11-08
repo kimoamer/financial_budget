@@ -43,6 +43,7 @@ def get_account_tree(company, root_types):
 				"root_type",
 				"account_type",
 				"include_in_gross",
+				"balance_must_be",
 			],
 			order_by="lft",
 		)

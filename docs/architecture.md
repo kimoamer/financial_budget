@@ -80,6 +80,12 @@ fieldname. A later override of the same method is listed as a conflict on the se
   the ancestor's budget is used (note shown).
 - Group rows = sum of budgeted leaves below them. A leaf with no budget shows *empty*, not 0, status
   `No Budget`; a group with some unbudgeted leaves is `Partial Budget`.
+- Deduction (contra) accounts — e.g. scholarships or discounts under Income, recoveries under Expense —
+  get a **negative** budget, like their actual, although ERPNext budgets are entered as positive
+  amounts. An account is a deduction when its *Balance Must Be* is the opposite of its section
+  (Debit under Income, Credit under Expense); when *Balance Must Be* is empty, when its actual in the
+  report range is negative. Set *Balance Must Be* to make it explicit (needed for an account with no
+  actual yet). The Budgeted Balance Sheet's planned profit uses the same rule (actual = fiscal year).
 - Net profit budget = income budget − expense budget; `Plan Incomplete` when one side has no budget.
 - Variance is signed so that **positive = favourable**: income rows and net profit use actual − budget,
   expense rows (accounts and the Total Expense row) use budget − actual, so overspending is negative.

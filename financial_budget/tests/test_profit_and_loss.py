@@ -70,6 +70,33 @@ class TestProfitAndLossBudget(fx.BudgetTestCase, FrappeTestCase):
 		self.assertEqual(labels["total"], frappe._("Total") + " " + frappe._("Actual"))
 		self.assertNotIn(frappe._("Actual"), labels["account"])
 
+	def test_contra_income_budget_is_negative(self):
+		# a deduction inside Income (scholarships, discounts): budget entered positive, shown negative
+		for name, must_be in (("FB Discounts", ""), ("FB Allowances", "Debit")):
+			frappe.get_doc(doctype="Account", account_name=name, parent_account=acc("FB Operating Income"),
+				company=fx.COMPANY, is_group=0, balance_must_be=must_be).insert()
+		fx.journal("2026-09-01", [(acc("FB Discounts"), 300, 0), (acc("FB Cash"), 0, 300)])
+		fx.budget([(acc("FB Discounts"), 1200), (acc("FB Allowances"), 600)])
+		result, original = fx.run(pl, fx.filters(periodicity="Yearly"))
+		fx.assert_actuals_unchanged(self, result, original)
+		rows = fx.rows_by_account(result)
+		discounts = rows[acc("FB Discounts")]  # detected from its debit (negative) actual
+		self.assertEqual(discounts["jun_2027"], -300)
+		self.assertAlmostEqual(discounts["fb_budget_jun_2027"], -1200)
+		self.assertAlmostEqual(discounts["fb_variance_jun_2027"], 900)  # less discount than planned: favourable
+		self.assertAlmostEqual(discounts["fb_variance_pct_jun_2027"], 75)
+		# FB Allowances has no actual: Balance Must Be = Debit marks it
+		self.assertAlmostEqual(rows[acc("FB Operating Income")]["fb_budget_jun_2027"], 12000 + 1200 - 1200 - 600)
+		net = rows["'" + frappe._("Profit for the year") + "'"]["fb_budget_jun_2027"]
+		self.assertAlmostEqual(net, 12000 + 1200 - 1200 - 600 - 2400)
+		# the Budgeted Balance Sheet's planned profit uses the same rule
+		from financial_budget.financial_budget.doctype.budgeted_balance_sheet.budgeted_balance_sheet import (
+			planned_profit_from_budget,
+		)
+
+		fy = frappe.get_doc("Fiscal Year", fx.FY)
+		self.assertAlmostEqual(planned_profit_from_budget(fx.COMPANY, fy, [fy.year_end_date])[fy.year_end_date], net)
+
 	def test_missing_budget_is_not_zero(self):
 		result, _o = fx.run(pl, fx.filters())
 		rows = fx.rows_by_account(result)
