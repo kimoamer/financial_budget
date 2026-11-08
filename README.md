@@ -1,6 +1,8 @@
 ### Financial Budget
 
-Budgets, variances and planned statements inside the standard ERPNext financial reports
+Budgets, variances and planned statements inside the standard ERPNext financial reports.
+
+See [docs/architecture.md](docs/architecture.md), [docs/installation.md](docs/installation.md), [docs/rollback.md](docs/rollback.md) and [docs/inspection.md](docs/inspection.md).
 
 ### Installation
 

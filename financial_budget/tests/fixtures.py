@@ -17,7 +17,8 @@ def acc(name):
 	return f"{name} - {ABBR}"
 
 
-def setup_company(company=COMPANY, abbr=ABBR):
+def setup_company(company=None, abbr=None, with_prev_fy=True):
+	company, abbr = company or COMPANY, abbr or ABBR
 	if not frappe.db.exists("Company", company):
 		frappe.get_doc(
 			doctype="Company",
@@ -28,7 +29,7 @@ def setup_company(company=COMPANY, abbr=ABBR):
 			create_chart_of_accounts_based_on="Standard Template",
 			chart_of_accounts="Standard",
 		).insert()
-	_fiscal_years()
+	_fiscal_years(with_prev_fy)
 	if company != COMPANY:
 		return
 	roots = {
@@ -76,22 +77,23 @@ def setup_company(company=COMPANY, abbr=ABBR):
 			frappe.get_doc(
 				doctype="Cost Center", cost_center_name=name, parent_cost_center=parent, company=company, is_group=is_group
 			).insert()
-	if not frappe.db.exists("Project", {"project_name": "FB Project X"}):
-		frappe.get_doc(doctype="Project", project_name="FB Project X", company=company).insert()
+	if not frappe.db.exists("Project", {"project_name": f"FB Project {abbr}"}):  # project_name is unique site-wide
+		frappe.get_doc(doctype="Project", project_name=f"FB Project {abbr}", company=company).insert()
 
 
 def project():
-	return frappe.db.get_value("Project", {"project_name": "FB Project X"})
+	return frappe.db.get_value("Project", {"project_name": f"FB Project {ABBR}"})
 
 
-def main_cc(company=COMPANY):
+def main_cc(company=None):
+	company = company or COMPANY
 	return frappe.get_cached_value("Company", company, "cost_center")
 
 
-def _fiscal_years():
+def _fiscal_years(with_prev_fy=True):
 	if not frappe.db.exists("Fiscal Year", FY):
 		frappe.get_doc(doctype="Fiscal Year", year=FY, year_start_date="2026-07-01", year_end_date="2027-06-30").insert()
-	if not frappe.db.exists("Fiscal Year", {"year_start_date": "2025-07-01"}):
+	if with_prev_fy and not frappe.db.exists("Fiscal Year", {"year_start_date": "2025-07-01"}):
 		frappe.get_doc(doctype="Fiscal Year", year=PREV_FY, year_start_date="2025-07-01", year_end_date="2026-06-30").insert()
 
 
@@ -99,8 +101,9 @@ def prev_fy():
 	return frappe.db.get_value("Fiscal Year", {"year_start_date": "2025-07-01"})
 
 
-def journal(date, lines, company=COMPANY):
+def journal(date, lines, company=None):
 	"""lines: [(account, debit, credit, extra dict)]"""
+	company = company or COMPANY
 	je = frappe.get_doc(doctype="Journal Entry", company=company, posting_date=date, voucher_type="Journal Entry")
 	for account, debit, credit, *extra in lines:
 		row = {"account": account, "debit_in_account_currency": debit, "credit_in_account_currency": credit}
@@ -113,7 +116,8 @@ def journal(date, lines, company=COMPANY):
 	return je
 
 
-def budget(lines, cost_center=None, project_name=None, fiscal_year=FY, distribution=None, company=COMPANY, validate=True):
+def budget(lines, cost_center=None, project_name=None, fiscal_year=FY, distribution=None, company=None, validate=True):
+	company = company or COMPANY
 	doc = frappe.get_doc(
 		doctype="Budget",
 		company=company,
@@ -148,8 +152,9 @@ def distribution(name, percentages):
 	return doc.name
 
 
-def plan(rows, profit_loss_source="ERPNext Budget", scenario="Base", frequency="Annual", submit=True, periods=None, company=COMPANY):
+def plan(rows, profit_loss_source="ERPNext Budget", scenario="Base", frequency="Annual", submit=True, periods=None, company=None):
 	"""rows: [(period_end_date, account, opening, movement)]"""
+	company = company or COMPANY
 	doc = frappe.get_doc(
 		doctype="Budgeted Balance Sheet",
 		company=company,
